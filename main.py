@@ -8,8 +8,13 @@ from asteroid import Asteroid
 from shot import Shot
 from button import Button
 
-# Initialize Pygame
+ # Initialize Pygame
 pygame.init()
+sound_enabled = True
+try:
+    pygame.mixer.init()
+except pygame.error:
+    sound_enabled = False
 
 # Create the game window
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -20,6 +25,18 @@ gameBG = pygame.image.load("assets/starbg.png")
 asteroid50 = pygame.image.load("assets/asteroid50.png")
 asteroid100 = pygame.image.load("assets/asteroid100.png")
 asteroid150 = pygame.image.load("assets/asteroid150.png")
+
+if sound_enabled:
+    bullet_sound = pygame.mixer.Sound("sounds/shoot.wav")
+    bang_large = pygame.mixer.Sound("soundsbangLarge.wav")
+    bang_small = pygame.mixer.Sound("sounds/bangSmall.wav")
+    gameover_sound = pygame.mixer.Sound("sounds/gameover.wav")
+else:
+    bullet_sound = None
+    bang_large = None
+    bang_small = None
+    gameover_sound = None
+
 
 
 def get_font(size): 
@@ -45,8 +62,17 @@ def play():
     Shot.containers = (shots, updatable, drawable)
 
     # Create instances
-    player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, PLAYER_RADIUS)
+    player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, PLAYER_RADIUS, bullet_sound=bullet_sound)
     asteroid_field = AsteroidField()
+
+    # Play background music if sound is enabled
+    if sound_enabled:
+        try:
+            pygame.mixer.music.load("sounds/spacemusic.mp3")
+            pygame.mixer.music.play(-1)
+            pygame.mixer.music.set_volume(0.5)
+        except pygame.error:
+            pass
 
     # Highscore file logic
     highscore_file = "highscore.txt"
@@ -74,6 +100,8 @@ def play():
         scoretext = font.render('Score: ' + str(score), True, (255, 255, 0))
         highscoretext = font.render('Highscore: ' + str(highscore), True, (255, 255, 255))
 
+        
+
         for shape in drawable:
             shape.draw(screen)
         updatable.update(dt)
@@ -88,9 +116,17 @@ def play():
                 asteroid.kill()
                 if lives <= 0:
                     gameover = True
+                    if gameover_sound:
+                        gameover_sound.play()
                     break
             for shot in shots:
                 if asteroid.collide(shot):
+                    if asteroid.radius > ASTEROID_MIN_RADIUS:
+                        if bang_large:
+                            bang_large.play()
+                    else:
+                        if bang_small:
+                            bang_small.play()
                     asteroid.split()
                     shot.kill()
                     score += 1
@@ -136,6 +172,15 @@ def play():
                 return
 
 def Info_menu():
+        # Play background music if sound is enabled
+    if sound_enabled:
+        try:
+            pygame.mixer.music.load("sounds/menumusic.mp3")
+            pygame.mixer.music.play(-1)
+            pygame.mixer.music.set_volume(0.5)
+        except pygame.error:
+            pass
+
     while True:
         screen.blit(menuBG, (0, 0))
 
@@ -188,6 +233,14 @@ def Info_menu():
 
         pygame.display.update()
 def main_menu():
+    # Play background music if sound is enabled
+    if sound_enabled:
+        try:
+            pygame.mixer.music.load("sounds/menumusic.mp3")
+            pygame.mixer.music.play(-1)
+            pygame.mixer.music.set_volume(0.5)
+        except pygame.error:
+            pass
     while True:
         screen.blit(menuBG, (0, 0))
 

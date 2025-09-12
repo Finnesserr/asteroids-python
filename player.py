@@ -4,7 +4,7 @@ from constants import *
 from shot import *
 
 class Player(CircleShape):
-    def __init__(self, x, y, radius):
+    def __init__(self, x, y, radius, bullet_sound=None):
         super().__init__(x, y, radius)
         self.rotation = 0  # in degrees
         self.shoot_cooldown = 0.0  # seconds
@@ -12,6 +12,7 @@ class Player(CircleShape):
         size = int(radius * 3)
         self.image = pygame.transform.scale(raw_image, (size, size))
         self.rect = self.image.get_rect(center=(self.position.x, self.position.y))
+        self.bullet_sound = bullet_sound
 
     # in the player class
     def triangle(self):
@@ -47,6 +48,8 @@ class Player(CircleShape):
             shot = Shot(self.position.x, self.position.y, self.rotation)
             shot.velocity = pygame.Vector2(0, 1).rotate(self.rotation) * PLAYER_SHOOT_SPEED
             self.shoot_cooldown = PLAYER_SHOOT_COOLDOWN
+            if self.bullet_sound:
+                self.bullet_sound.play()
         rotated_image = pygame.transform.rotate(self.image, -self.rotation)
         self.rect = rotated_image.get_rect(center=(self.position.x, self.position.y))
     
