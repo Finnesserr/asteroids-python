@@ -12,7 +12,8 @@ from button import Button
 pygame.init()
 sound_enabled = True
 try:
-    pygame.mixer.init()
+    # Use recommended mixer settings for smoother music playback
+    pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=512)
 except pygame.error:
     sound_enabled = False
 
@@ -28,9 +29,14 @@ asteroid150 = pygame.image.load("assets/asteroid150.png")
 
 if sound_enabled:
     bullet_sound = pygame.mixer.Sound("sounds/shoot.wav")
-    bang_large = pygame.mixer.Sound("soundsbangLarge.wav")
+    bang_large = pygame.mixer.Sound("sounds/bangLarge.wav")
     bang_small = pygame.mixer.Sound("sounds/bangSmall.wav")
     gameover_sound = pygame.mixer.Sound("sounds/gameover.wav")
+    # Lower sound effect volumes
+    bullet_sound.set_volume(0.2)
+    bang_large.set_volume(0.2)
+    bang_small.set_volume(0.2)
+    gameover_sound.set_volume(0.2)
 else:
     bullet_sound = None
     bang_large = None
@@ -64,13 +70,16 @@ def play():
     # Create instances
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, PLAYER_RADIUS, bullet_sound=bullet_sound)
     asteroid_field = AsteroidField()
+   
 
     # Play background music if sound is enabled
     if sound_enabled:
         try:
-            pygame.mixer.music.load("sounds/spacemusic.mp3")
+            pygame.mixer.music.load("sounds/spacemusic.wav")
+            # Only call play(-1) once, not in a loop
             pygame.mixer.music.play(-1)
-            pygame.mixer.music.set_volume(0.5)
+            pygame.mixer.music.set_volume(0.2)
+            # If jitter persists, convert spacemusic.mp3 to WAV for best results
         except pygame.error:
             pass
 
@@ -116,6 +125,8 @@ def play():
                 asteroid.kill()
                 if lives <= 0:
                     gameover = True
+                    # Stop music on gameover
+                    pygame.mixer.music.stop()
                     if gameover_sound:
                         gameover_sound.play()
                     break
@@ -137,6 +148,7 @@ def play():
                 sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
+                    main_menu()
                     return
 
         pygame.display.update()
@@ -169,6 +181,7 @@ def play():
             if event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                     return
+                main_menu()
                 return
 
 def Info_menu():
@@ -177,7 +190,8 @@ def Info_menu():
         try:
             pygame.mixer.music.load("sounds/menumusic.mp3")
             pygame.mixer.music.play(-1)
-            pygame.mixer.music.set_volume(0.5)
+            pygame.mixer.music.set_volume(0.2)
+            # If jitter persists, convert menumusic.mp3 to WAV for best results
         except pygame.error:
             pass
 
@@ -233,12 +247,14 @@ def Info_menu():
 
         pygame.display.update()
 def main_menu():
-    # Play background music if sound is enabled
+    # Stop any currently playing music before starting menu music
+    pygame.mixer.music.stop()
     if sound_enabled:
         try:
             pygame.mixer.music.load("sounds/menumusic.mp3")
             pygame.mixer.music.play(-1)
-            pygame.mixer.music.set_volume(0.5)
+            pygame.mixer.music.set_volume(0.2)
+            # If jitter persists, convert menumusic.mp3 to WAV for best results
         except pygame.error:
             pass
     while True:

@@ -8,7 +8,7 @@ class Shot(CircleShape):
         super().__init__(x, y, SHOT_RADIUS)
         # Load and scale down the laserblast image
         original_image = pygame.image.load("assets/laserblast.png").convert_alpha()
-        scale_factor = 0.05  # 50% size
+        scale_factor = 0.05  
         width = int(original_image.get_width() * scale_factor)
         height = int(original_image.get_height() * scale_factor)
         self.base_image = pygame.transform.smoothscale(original_image, (width, height))
