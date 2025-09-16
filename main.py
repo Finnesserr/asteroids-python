@@ -188,7 +188,7 @@ def Info_menu():
         # Play background music if sound is enabled
     if sound_enabled:
         try:
-            pygame.mixer.music.load("sounds/menumusic.mp3")
+            pygame.mixer.music.load("sounds/menumusic.wav")
             pygame.mixer.music.play(-1)
             pygame.mixer.music.set_volume(0.2)
             # If jitter persists, convert menumusic.mp3 to WAV for best results
@@ -251,7 +251,7 @@ def main_menu():
     pygame.mixer.music.stop()
     if sound_enabled:
         try:
-            pygame.mixer.music.load("sounds/menumusic.mp3")
+            pygame.mixer.music.load("sounds/menumusic.wav")
             pygame.mixer.music.play(-1)
             pygame.mixer.music.set_volume(0.2)
             # If jitter persists, convert menumusic.mp3 to WAV for best results
